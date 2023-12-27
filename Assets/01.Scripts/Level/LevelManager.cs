@@ -14,6 +14,8 @@ public class LevelPrefab
 [RequireComponent(typeof(LevelPoolManager))]
 public class LevelManager : MonoBehaviour
 {
+	public static LevelManager Instance;
+
 	[SerializeField]
 	private Camera cam;
 
@@ -48,6 +50,15 @@ public class LevelManager : MonoBehaviour
 
 	private void Awake()
 	{
+		if (Instance == null)
+			Instance = this;
+		else
+		{
+			Debug.LogError("Multiple LevelManager Instance");
+			Destroy(gameObject);
+			return;
+		}
+
 		poolManager = GetComponent<LevelPoolManager>();
 		bottomPos = cam.ScreenToWorldPoint(new Vector3(0, 0));
 	}
@@ -246,8 +257,8 @@ public class LevelManager : MonoBehaviour
 	{
 		Level obj = poolManager.Pop(level);
 		spawnedLevels.Add(obj);
-		lateInput = obj;
 		obj.OnSpawn();
+		lateInput = obj;
 		return obj;
 	}
 
